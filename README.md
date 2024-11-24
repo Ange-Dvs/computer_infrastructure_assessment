@@ -1,6 +1,13 @@
 # computer_infrastructure_assessment
 Repository for Semester 2 Computer Infrastructure assessment
 
+## Installation
+
+## Usage
+
+## Dependancies
+
+## External resources links
 https://pandas.pydata.org/docs/reference/api/pandas.read_json.html#pandas-read-json
 https://www.w3schools.com/python/pandas/pandas_json.asp
 https://www.geeksforgeeks.org/visualizing-json-data-in-python/
