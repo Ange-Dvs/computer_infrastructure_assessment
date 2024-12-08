@@ -91,6 +91,10 @@ Within the project various external libaries are used including:
 - ``matplotlib.dates``
 - ``numpy``
 
+###
+
+idxmin()
+.strftime('%H:%M')
 
 
 ### External resources links
