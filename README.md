@@ -95,6 +95,8 @@ Within the project various external libaries are used including:
 
 idxmin()
 .strftime('%H:%M')
+.abs()
+https://seaborn.pydata.org/generated/seaborn.heatmap.html
 
 
 ### External resources links
