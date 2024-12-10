@@ -97,6 +97,14 @@ idxmin()
 .strftime('%H:%M')
 .abs()
 https://seaborn.pydata.org/generated/seaborn.heatmap.html
+https://seaborn.pydata.org/generated/seaborn.pairplot.html
+https://seaborn.pydata.org/tutorial/distributions.html
+https://seaborn.pydata.org/generated/seaborn.histplot.html
+https://seaborn.pydata.org/generated/seaborn.kdeplot.html
+https://www.analyticsvidhya.com/blog/2023/12/mastering-tabulate/
+
+
+
 
 
 ### External resources links
