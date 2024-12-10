@@ -26,6 +26,7 @@ If the pull has been successful, you should see
 - ``timestamps`` sub-directory 
 - ``weather`` sub-directory
 - ``images`` directory
+- ``myfunctions.py`` file
 - ``README.md`` file
 - ``.gitignore`` file
 - ``requirements.txt`` file
@@ -98,10 +99,16 @@ idxmin()
 .abs()
 https://seaborn.pydata.org/generated/seaborn.heatmap.html
 https://seaborn.pydata.org/generated/seaborn.pairplot.html
-https://seaborn.pydata.org/tutorial/distributions.html
+https://seaborn.pydata.org/tutorial/distributions.html#kernel-density-estimation
 https://seaborn.pydata.org/generated/seaborn.histplot.html
 https://seaborn.pydata.org/generated/seaborn.kdeplot.html
 https://www.analyticsvidhya.com/blog/2023/12/mastering-tabulate/
+https://stackoverflow.com/questions/70630387/saving-functions-into-package-in-jupyter-notebooks
+https://www.w3schools.com/python/pandas/ref_df_describe.asp
+https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html
+https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.filter.html
+https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.loc.html#pandas.DataFrame.loc
+https://www.codecademy.com/resources/docs/pandas/dataframe/loc
 
 
 
