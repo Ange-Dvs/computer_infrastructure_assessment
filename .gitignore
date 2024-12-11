@@ -3,6 +3,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# Ignore all .pyc files, which are compiled Python files created to speed up execution
+*.pyc
+
+# But don't ignore this specific file
+!myfunctions.py
 
 # C extensions
 *.so
@@ -232,9 +237,3 @@ $RECYCLE.BIN/
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-
-# Ignore the __pycache__ directory, which contains Python bytecode files
-/__pycache__/*
-
-# Ignore all .pyc files, which are compiled Python files created to speed up execution
-*.pyc
