@@ -1,5 +1,7 @@
 # importing libaries needed for use within the functions
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 def colours_for_pie(counted_cardinalWindDirection, counted_weather_descriptions): # function which handles deciding how many unique colours are needed for the pie chart depending on the length of the counted_weather_descriptions vs counted_cardinalWindDirection
     colormap = plt.colormaps['tab20'] # generating colours using 'tab20' colormap as it contains 20 unique colours to avoid having colours repeated in pie chart
@@ -11,8 +13,8 @@ def colours_for_pie(counted_cardinalWindDirection, counted_weather_descriptions)
         #print(f'colour weather') used for testing if the if else statement was working correctly
     return colours_to_use
 
-def check_common_wind_direction(df): # function called to find the most common cardinal wind direction for the day and return full word instead of initials 
-    wind_direction = df['cardinalWindDirection'].mode()[0]
+def check_common_wind_direction(data): # function called to find the most common cardinal wind direction for the day and return full word instead of initials 
+    wind_direction = data['cardinalWindDirection'].mode()[0]
 
     if wind_direction == 'N':
         most_common_wind_direction = 'North'
@@ -43,9 +45,9 @@ def check_common_wind_direction(df): # function called to find the most common c
 
     return most_common_wind_direction 
 
-def classifying_temperature (df): # function checking the average temperature of the day and classifying it with a general description 
+def classifying_temperature (data): # function checking the average temperature of the day and classifying it with a general description 
     # determining the average temperature of the day
-    av_temp = df['temperature'].mean()
+    av_temp = data['temperature'].mean()
 
     #print(av_temp) used for testing the temperature classification.
 
@@ -65,3 +67,20 @@ def classifying_temperature (df): # function checking the average temperature of
         temp_classification = 'Hot day'
     
     return temp_classification
+
+def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format): # function to take in the historical datasets for previous years and prepare the data to be used 
+    data.rename(columns=rename_columns, inplace=True) # renaming the columns of the dataset
+    print('Data type per column:')
+    
+    for col in numeric_fields: # cycling through the dataset to ensure fields are of dtype 
+        data[col] = pd.to_numeric(data[col], errors='coerce')
+
+    # replacing empty strings with NaN
+    data.replace("", np.nan, inplace=True)
+
+    # converting date column to datetime and set as index
+    data['datetime'] = pd.to_datetime(data[date_col], format=datetime_format, errors='coerce')
+    data.set_index(data['datetime'], inplace=True)
+    data.drop(['datetime', date_col], axis=1, inplace=True)
+
+    return data
