@@ -106,6 +106,9 @@ Within the project various external libraries are used including:
 
 ###
 
+chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://cli.fusio.net/cli/stormcenter/PDF/Elin.pdf > storm elin 2023
+
+enumerate()
 idxmin()
 .strftime('%H:%M')
 .abs()

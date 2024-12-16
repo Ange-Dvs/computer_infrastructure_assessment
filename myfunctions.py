@@ -2,6 +2,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.dates as mdates
+
 
 def colours_for_pie(counted_cardinalWindDirection, counted_weather_descriptions): # function which handles deciding how many unique colours are needed for the pie chart depending on the length of the counted_weather_descriptions vs counted_cardinalWindDirection
     colormap = plt.colormaps['tab20'] # generating colours using 'tab20' colormap as it contains 20 unique colours to avoid having colours repeated in pie chart
@@ -68,9 +71,10 @@ def classifying_temperature (data): # function checking the average temperature 
     
     return temp_classification
 
-def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format): # function to take in the historical datasets for previous years and prepare the data to be used 
-    data.rename(columns=rename_columns, inplace=True) # renaming the columns of the dataset
-    print('Data type per column:')
+def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format): # function to take in the datasets prepare the data to be used for various calculations 
+
+    if rename_columns is not None:
+        data.rename(columns=rename_columns, inplace=True) # renaming the columns of the dataset
     
     for col in numeric_fields: # cycling through the dataset to ensure fields are of dtype 
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -84,3 +88,48 @@ def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_for
     data.drop(['datetime', date_col], axis=1, inplace=True)
 
     return data
+
+def get_mean_min_max(field, datasets, years): # calculating the mean, min and max of a value depending on the field passed into the function
+    print(f"{'Year':<6} {'Mean':<10} {'Min':<10} {'Max':<10}") # info is displayed in a table like view, the alignment and width is set by defining the number of characters space for the headers after the '<' symbol
+    print("-" * 35)
+    results = []  # To store results
+    for year, dataset in zip(years, datasets): # the years & datasets lists are cycled through and the mean, min and max are calculated
+        mean_val = dataset[field].mean()
+        min_val = dataset[field].min()
+        max_val = dataset[field].max()
+
+         # Append results to the list
+        results.append({
+            'year': year,
+            'mean': mean_val,
+            'min': min_val,
+            'max': max_val
+        })
+
+        print(f"{year:<6}{mean_val:<10.2f}{min_val:<10.2f}{max_val:<10.2f}") # results are printed in the Jupyter notebook for the user
+    return results
+
+def line_plot_overview (selected_column, dataset24): # function created to generate a line plots when called at once to reduce repeated code throughout the notebook
+    plt.figure(figsize=(10,2))
+    sns.lineplot(data=dataset24, x=dataset24.index, y=selected_column)
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d\n%H:%M')) 
+    plt.xlabel('Date & time')
+    plt.ylabel(f'{selected_column.capitalize()}')
+    plt.title(f'{selected_column.capitalize()}')
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
