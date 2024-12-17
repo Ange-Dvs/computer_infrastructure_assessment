@@ -137,9 +137,31 @@ def plot_column(datasets, column_name, labels):
     plt.grid(True)
     plt.show()
 
+def stats_single_field(dataset, field):
+    max_value = dataset[field].max()
+    max_times = dataset[dataset[field] == max_value].index
+    max_value_times_formatted = [time.strftime('%H:%M') for time in max_times]
 
+    min_value = dataset[field].min()
+    min_times = dataset[dataset[field] == min_value].index
+    min_value_times_formatted = [time.strftime('%H:%M') for time in min_times]
 
+    full_range = max_value - min_value
 
+    avg_field = dataset[field].mean()
+
+    dataset[f'{field}_rate_of_change'] = dataset[field].diff()
+
+    av_rate_change = dataset[f'{field}_rate_of_change'].mean()
+    largest_change_rate = dataset[f'{field}_rate_of_change'].abs().max()
+
+    # printing the time of max, min and temperature range for the day
+    print(f'Highest {field.capitalize()}:\t\t {max_value} at {", ".join(max_value_times_formatted)}')
+    print(f'Lowest {field.capitalize()}:\t\t {min_value} at {", ".join(min_value_times_formatted)}')
+    print(f'Average {field.capitalize()}:\t\t {avg_field:.2f}')
+    print(f'Range for day:\t\t\t {max_value} - {min_value} = {full_range}')
+    print(f'Average hourly rate of change:\t {av_rate_change:.2f}')
+    print(f'Largest rate of change was:\t {largest_change_rate}')
 
 
 
