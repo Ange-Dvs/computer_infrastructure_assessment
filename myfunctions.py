@@ -119,6 +119,23 @@ def line_plot_overview (selected_column, dataset24): # function created to gener
     plt.show()
 
 
+def plot_column(datasets, column_name, labels):
+    plt.figure(figsize=(10, 6))
+
+    for i, df in enumerate(datasets):
+        if column_name not in df.columns:
+            print(f"Warning: '{column_name}' not found in DataFrame {i+1}. Skipping.")
+            continue
+        if labels and i < len(labels): 
+            label= labels[i]
+            plt.plot(df.index.hour, df[column_name], marker='o', linestyle='-', label=label)
+            
+    plt.xlabel('Time (24 hr clock)')
+    plt.ylabel(f'{column_name.capitalize()}')
+    plt.title(f'{column_name.capitalize()} across the years', y=1.1, fontsize=16)
+    plt.legend(loc='upper center', bbox_to_anchor = (0.5, 1.10), ncols = 5)
+    plt.grid(True)
+    plt.show()
 
 
 
