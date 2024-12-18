@@ -48,29 +48,6 @@ def check_common_wind_direction(data): # function called to find the most common
 
     return most_common_wind_direction 
 
-def classifying_temperature (data): # function checking the average temperature of the day and classifying it with a general description 
-    # determining the average temperature of the day
-    av_temp = data['temperature'].mean()
-
-    #print(av_temp) used for testing the temperature classification.
-
-    if av_temp <= 0:
-        temp_classification = 'Freezing day'
-
-    elif av_temp >= 1 and av_temp <= 13:
-        temp_classification = 'Cold day'
-
-    elif av_temp >= 14 and av_temp <= 20:
-        temp_classification = 'Cool day'
-
-    elif av_temp >= 21 and av_temp <= 23:
-        temp_classification = 'Warm day'
-
-    else:
-        temp_classification = 'Hot day'
-    
-    return temp_classification
-
 def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format): # function to take in the datasets prepare the data to be used for various calculations 
 
     if rename_columns is not None:
