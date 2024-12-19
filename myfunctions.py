@@ -66,9 +66,10 @@ def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_for
 
     return data
 
-def get_mean_min_max(field, datasets, years): # calculating the mean, min and max of a value depending on the field passed into the function
-    print(f"{'Year':<6} {'Mean':<10} {'Min':<10} {'Max':<10}") # info is displayed in a table like view, the alignment and width is set by defining the number of characters space for the headers after the '<' symbol
-    print("-" * 35)
+def get_mean_min_max(field, datasets, years,unit): # calculating the mean, min and max of a value depending on the field passed into the function
+    print(f'{field.capitalize()} in {unit}\n')
+    print(f'{'Year':<5} {'Mean':<9} {'Min':<9} {'Max':<9}') # info is displayed in a table like view, the alignment and width is set by defining the number of characters space for the headers after the '<' symbol
+    print('-' * 35)
     results = []  # To store results
     for year, dataset in zip(years, datasets): # the years & datasets lists are cycled through and the mean, min and max are calculated
         mean_val = dataset[field].mean()
@@ -83,7 +84,7 @@ def get_mean_min_max(field, datasets, years): # calculating the mean, min and ma
             'max': max_val
         })
 
-        print(f"{year:<6}{mean_val:<10.2f}{min_val:<10.2f}{max_val:<10.2f}") # results are printed in the Jupyter notebook for the user
+        print(f'{year:<6}{mean_val:<10.2f}{min_val:<10.2f}{max_val:<10.2f}') # results are printed in the Jupyter notebook for the user
     return results
 
 def line_plot_overview (selected_column, dataset24): # function created to generate a line plots when called at once to reduce repeated code throughout the notebook
@@ -101,7 +102,7 @@ def plot_column(datasets, column_name, labels):
 
     for i, df in enumerate(datasets):
         if column_name not in df.columns:
-            print(f"Warning: '{column_name}' not found in DataFrame {i+1}. Skipping.")
+            print(f'Warning: "{column_name}" not found in DataFrame {i+1}. Skipping.')
             continue
         if labels and i < len(labels): 
             label= labels[i]
@@ -114,7 +115,7 @@ def plot_column(datasets, column_name, labels):
     plt.grid(True)
     plt.show()
 
-def stats_single_field(dataset, field):
+def stats_single_field(dataset, field, unit):
     max_value = dataset[field].max()
     max_times = dataset[dataset[field] == max_value].index
     max_value_times_formatted = [time.strftime('%H:%M') for time in max_times]
@@ -133,17 +134,12 @@ def stats_single_field(dataset, field):
     largest_change_rate = dataset[f'{field}_rate_of_change'].abs().max()
 
     # printing the time of max, min and temperature range for the day
-    print(f'Highest {field.capitalize()}:\t\t {max_value} at {", ".join(max_value_times_formatted)}')
-    print(f'Lowest {field.capitalize()}:\t\t {min_value} at {", ".join(min_value_times_formatted)}')
-    print(f'Average {field.capitalize()}:\t\t {avg_field:.2f}')
-    print(f'Range for day:\t\t\t {max_value} - {min_value} = {full_range}')
-    print(f'Average hourly rate of change:\t {av_rate_change:.2f}')
-    print(f'Largest rate of change was:\t {largest_change_rate}')
-
-
-
-
-
+    print(f'Highest {field.capitalize()}:\t\t {max_value}{unit} at {', '.join(max_value_times_formatted)}')
+    print(f'Lowest {field.capitalize()}:\t\t {min_value}{unit} at {', '.join(min_value_times_formatted)}')
+    print(f'Average {field.capitalize()}:\t\t {avg_field:.2f}{unit}')
+    print(f'Range for day:\t\t\t {max_value}{unit} - {min_value}{unit} = {full_range}{unit}')
+    print(f'Average hourly rate of change:\t {av_rate_change:.2f}{unit}')
+    print(f'Largest rate of change was:\t {largest_change_rate}{unit}')
 
 
 
