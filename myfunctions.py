@@ -48,21 +48,41 @@ def check_common_wind_direction(data): # function called to find the most common
 
     return most_common_wind_direction 
 
-def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format): # function to take in the datasets prepare the data to be used for various calculations 
+def preprocess_data(data, rename_columns, numeric_fields, datetime_format): # function to take in the datasets prepare the data to be used for various calculations 
 
-    if rename_columns is not None:
+    if rename_columns is not None: # converting date column to datetime skipping for 2024 df as ths is done outside of the function
+        data['datetime'] = pd.to_datetime(data['date'], format=datetime_format, errors='coerce')
+        #data['datetime'] = data['datetime'].dt.strftime('%Y-%m-%d')
         data.rename(columns=rename_columns, inplace=True) # renaming the columns of the dataset
+        # converting date column to datetime and set as index
+        data.set_index(data['datetime'], inplace=True, drop=True)
+        # removing duplicated datetime column if it's still there after setting the datetime as the index
+        if 'datetime' in data.columns:
+            data.drop(columns=['datetime'], inplace=True)
     
+    else:
+
+        # Split the date column into parts
+        data['date'] = data['date'].astype(str)
+        parts = data['date'].str.split('-', expand=True)
+        # Rearrange the parts to create the desired format
+        data['formatted_date'] = parts[0] + '-' + parts[2] + '-' + parts[1]
+        data['datetime'] = pd.to_datetime(data['formatted_date'].astype(str) + ' ' + data['reportTime'].astype(str)) # merging the date and reportTime columns from the .json file as strings and converting to a pandas datetime series to enable it to be used as the index for the DataFrame
+        # converting date column to datetime and set as index
+        # removing duplicated unneccessary columns
+        data.set_index(data['datetime'], inplace=True, drop=True)
+        data = data.drop((['reportTime', 'date', 'formatted_date']),axis =1) 
+        if 'datetime' in data.columns:
+            data.drop(columns=['datetime'], inplace=True)
+      
+
     for col in numeric_fields: # cycling through the dataset to ensure fields are of dtype 
         data[col] = pd.to_numeric(data[col], errors='coerce')
 
     # replacing empty strings with NaN
     data.replace("", np.nan, inplace=True)
 
-    # converting date column to datetime and set as index
-    data['datetime'] = pd.to_datetime(data[date_col], format=datetime_format, errors='coerce')
-    data.set_index(data['datetime'], inplace=True)
-    data.drop(['datetime', date_col], axis=1, inplace=True)
+   
 
     return data
 
@@ -98,16 +118,20 @@ def line_plot_overview (selected_column, dataset24): # function created to gener
 
 
 def plot_column(datasets, column_name, labels):
+    # setting the size of the plot
     plt.figure(figsize=(10, 6))
 
+    # iterating over each dataset in the list
     for i, df in enumerate(datasets):
+        # checking if the column exists in the current DataFrame
         if column_name not in df.columns:
             print(f'Warning: "{column_name}" not found in DataFrame {i+1}. Skipping.')
             continue
+        # If labels are provided, assign the current label to the line plot
         if labels and i < len(labels): 
             label= labels[i]
             plt.plot(df.index.hour, df[column_name], marker='o', linestyle='-', label=label)
-            
+    # setting the labels, title, legend, adding a grid and showing the plot
     plt.xlabel('Time (24 hr clock)')
     plt.ylabel(f'{column_name.capitalize()}')
     plt.title(f'{column_name.capitalize()} across the years', y=1.1, fontsize=16)
@@ -116,14 +140,17 @@ def plot_column(datasets, column_name, labels):
     plt.show()
 
 def stats_single_field(dataset, field, unit):
+    # finding the maximum value in the field and the corresponding times
     max_value = dataset[field].max()
     max_times = dataset[dataset[field] == max_value].index
     max_value_times_formatted = [time.strftime('%H:%M') for time in max_times]
 
+    # finding the minimum value in the field and the corresponding times
     min_value = dataset[field].min()
     min_times = dataset[dataset[field] == min_value].index
     min_value_times_formatted = [time.strftime('%H:%M') for time in min_times]
 
+    # calculating the range of values (max - min), average and rate of change for the field
     full_range = max_value - min_value
 
     avg_field = dataset[field].mean()
@@ -140,8 +167,3 @@ def stats_single_field(dataset, field, unit):
     print(f'Range for day:\t\t\t {max_value}{unit} - {min_value}{unit} = {full_range}{unit}')
     print(f'Average hourly rate of change:\t {av_rate_change:.2f}{unit}')
     print(f'Largest rate of change was:\t {largest_change_rate:.2f}{unit}')
-
-
-
-
-

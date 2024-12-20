@@ -1,5 +1,5 @@
 # computer_infrastructure_assessment
-Repository for Semester 2 Computer Infrastructure assessment
+This repository contains the code and documentation for my Weather Analysis Notebook. The notebook was created as part of the Semester 2 Computer Infrastructure Assessment, focusing on analysing and visualizing weather data collected from Met Éireann's Athenry weather station.
 
 ## Installation & Usage Instructions
 
@@ -53,6 +53,14 @@ If any errors occur, check your dependencies and ensure all libraries are instal
 For the automation of the ``weather.sh`` script GitHub Codespaces was used.  
 
 ## Dependencies
+The notebook uses the following Python libraries:
+
+- ``Pandas``
+- ``NumPy``
+- ``Matplotlib``
+- ``Seaborn``
+
+Install these via the requirements.txt file.
 
 ## Dataset
 
@@ -63,123 +71,36 @@ The file is then read into the notebook to be analysed using the ``pandas`` func
 
 ## Walkthrough of code
 
-### Functions created
+### **Functions Summary**
 
-``def colours_for_pie(counted_cardinalWindDirection, counted_weather_descriptions)``
-This function handles deciding how many unique colours are needed for the pie chart depending on the length of the ``counted_weather_descriptions`` vs ``counted_cardinalWindDirection``. This is done to avoid issues with colours repeating in the pie chart if one of the charts has a larger amount of slices than the other. 
+#### ``colours_for_pie``
+Determines the appropriate number of unique colours for a pie chart based on the lengths of the `counted_cardinalWindDirection` and `counted_weather_descriptions` variables. Uses the `tab20` colormap to ensure distinct, non-repeating colours.
 
-``colormap = plt.colormaps['tab20']``
-The colours to use are generated using the ``tab20`` colormap. This contains 20 unique colours to avoid having colours repeated in pie chart. 
-    
-``if len(counted_cardinalWindDirection) > len(counted_weather_descriptions):``
-An if/else statement is used to determine the length of the two variables separately. The variables are then compared to see which one is longer to ensure no colours are repeated. 
+#### ``check_common_wind_direction``
+Finds the most common cardinal wind direction in the dataset and converts its abbreviation into the full word, for example N to North.
 
-``colours_to_use = [colormap(i / len(counted_cardinalWindDirection)) for i in range(len(counted_cardinalWindDirection))]``
-First an empty list is created, ``i`` is used to loop through a range as long as the length of the ``counted_cardinalWindDirection``. The iteration number is divided by the length of the variable, in the above code snippet this is the counted_cardinalWindDirection. This value is then mapped to a specific colour. After the for loop has completed the empty list will contain the colours to be used for the pie chart. 
+#### ``preprocess_data``
+Prepares the dataset for analysis by:
+- Renaming columns specified when calling the function.
+- Converting specified fields to numeric types.
+- Replacing empty strings with `NaN`.
+- Converting a date column into a datetime format and setting it as the index.
 
+#### ``get_mean_min_max``
+Calculates and prints the mean, minimum and maximum values for a specified field across multiple datasets. Displays the results in a formatted table for clarity.
 
-``def check_common_wind_direction(data)``
-This function is used to return the full word for the most common cardinal wind direction for the day instead of just the initials recorded in the ``.json`` file.
+#### ``line_plot_overview``
+Generates a line plot for a selected column in the dataset. Formats the x-axis to display dates and times for improved readability.
 
-``wind_direction = data['cardinalWindDirection'].mode()[0]``
-The ``cardinalWindDirection`` column is checked in this step for the dataset specified when the function is called. The most common value in the data is then found using ``.mode()``, ``[0]`` refers to the index to be used to locate which value to pull as 0 is the first value in a Series.
+#### ``plot_column``
+Creates a plot for a specific column from multiple datasets, showing values against a 24-hour time format. Handles missing columns gracefully and supports customizable labels.
 
-``if wind_direction == 'N': most_common_wind_direction = 'North'``
-The next section of the function uses ``if``, ``elif`` and ``else`` statements to determine what value matches the mode and then set a string to the ``most_common_wind_direction`` variable.  This value is then returned to the notebook. 
-
-``def preprocess_data(data, rename_columns, numeric_fields, date_col, datetime_format)``
-Function to take in the datasets and prepare the data to be used for various calculations 
-
-``if rename_columns is not None:
-        data.rename(columns=rename_columns, inplace=True) # renaming the columns of the dataset
-    
-    for col in numeric_fields: # cycling through the dataset to ensure fields are of dtype 
-        data[col] = pd.to_numeric(data[col], errors='coerce')
-
-    # replacing empty strings with NaN
-    data.replace("", np.nan, inplace=True)
-
-    # converting date column to datetime and set as index
-    data['datetime'] = pd.to_datetime(data[date_col], format=datetime_format, errors='coerce')
-    data.set_index(data['datetime'], inplace=True)
-    data.drop(['datetime', date_col], axis=1, inplace=True)
-
-    return data
-
-def get_mean_min_max(field, datasets, years,unit): # calculating the mean, min and max of a value depending on the field passed into the function
-    print(f'{field.capitalize()} in {unit}\n')
-    print(f'{'Year':<5} {'Mean':<9} {'Min':<9} {'Max':<9}') # info is displayed in a table like view, the alignment and width is set by defining the number of characters space for the headers after the '<' symbol
-    print('-' * 35)
-    results = []  # To store results
-    for year, dataset in zip(years, datasets): # the years & datasets lists are cycled through and the mean, min and max are calculated
-        mean_val = dataset[field].mean()
-        min_val = dataset[field].min()
-        max_val = dataset[field].max()
-
-         # Append results to the list
-        results.append({
-            'year': year,
-            'mean': mean_val,
-            'min': min_val,
-            'max': max_val
-        })
-
-        print(f'{year:<6}{mean_val:<10.2f}{min_val:<10.2f}{max_val:<10.2f}') # results are printed in the Jupyter notebook for the user
-    return results
-
-def line_plot_overview (selected_column, dataset24): # function created to generate a line plots when called at once to reduce repeated code throughout the notebook
-    plt.figure(figsize=(10,2))
-    sns.lineplot(data=dataset24, x=dataset24.index, y=selected_column)
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d\n%H:%M')) 
-    plt.xlabel('Date & time')
-    plt.ylabel(f'{selected_column.capitalize()}')
-    plt.title(f'{selected_column.capitalize()}')
-    plt.show()
-
-
-def plot_column(datasets, column_name, labels):
-    plt.figure(figsize=(10, 6))
-
-    for i, df in enumerate(datasets):
-        if column_name not in df.columns:
-            print(f'Warning: "{column_name}" not found in DataFrame {i+1}. Skipping.')
-            continue
-        if labels and i < len(labels): 
-            label= labels[i]
-            plt.plot(df.index.hour, df[column_name], marker='o', linestyle='-', label=label)
-            
-    plt.xlabel('Time (24 hr clock)')
-    plt.ylabel(f'{column_name.capitalize()}')
-    plt.title(f'{column_name.capitalize()} across the years', y=1.1, fontsize=16)
-    plt.legend(loc='upper center', bbox_to_anchor = (0.5, 1.10), ncols = 5)
-    plt.grid(True)
-    plt.show()
-
-def stats_single_field(dataset, field, unit):
-    max_value = dataset[field].max()
-    max_times = dataset[dataset[field] == max_value].index
-    max_value_times_formatted = [time.strftime('%H:%M') for time in max_times]
-
-    min_value = dataset[field].min()
-    min_times = dataset[dataset[field] == min_value].index
-    min_value_times_formatted = [time.strftime('%H:%M') for time in min_times]
-
-    full_range = max_value - min_value
-
-    avg_field = dataset[field].mean()
-
-    dataset[f'{field}_rate_of_change'] = dataset[field].diff()
-
-    av_rate_change = dataset[f'{field}_rate_of_change'].mean()
-    largest_change_rate = dataset[f'{field}_rate_of_change'].abs().max()
-
-    # printing the time of max, min and temperature range for the day
-    print(f'Highest {field.capitalize()}:\t\t {max_value}{unit} at {', '.join(max_value_times_formatted)}')
-    print(f'Lowest {field.capitalize()}:\t\t {min_value}{unit} at {', '.join(min_value_times_formatted)}')
-    print(f'Average {field.capitalize()}:\t\t {avg_field:.2f}{unit}')
-    print(f'Range for day:\t\t\t {max_value}{unit} - {min_value}{unit} = {full_range}{unit}')
-    print(f'Average hourly rate of change:\t {av_rate_change:.2f}{unit}')
-    print(f'Largest rate of change was:\t {largest_change_rate:.2f}{unit}')
+#### ``stats_single_field``
+Calculates and prints detailed statistics for a specific field in the dataset, including:
+- Maximum and minimum values (with the times recorded).
+- The range of values for the day.
+- The average hourly rate of change.
+- The largest observed rate of change.
 
 
 ### Cleaning the data 
@@ -216,13 +137,67 @@ msl:Mean Sea Level Pressure (hPa) (pressure)
 
 ### Libraries used
 
-Within the project various external libraries are used including: 
-
+The notebook makes extensive use of the following Python libraries. Below is a brief introduction to each, followed by the specific methods and functions utilized:
 - ``Pandas``
 - ``Matplotlib.pyplot``
 - ``Seaborn``
 - ``Matplotlib.dates``
 - ``NumPy``
+
+<font size="4"><b>Pandas</b></font>   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`Pandas` is a library in Python used for data analysis which enables the use of two-dimensional tables called DataFrames.  
+Within the project the ``Pandas`` library is used to read in the data from the various ``CSV`` files.  
+It is also used to convert date information in the ``CSV`` file to a datetime series.
+
+>``.read_json()`` (Function): Reads a JSON file into a DataFrame.
+
+>``.head()`` (Method): Displays the first few rows of the DataFrame.
+
+>``.describe()`` (Method): Summarizes statistics of numerical columns.
+
+> ``.to_datetime`` (Function) - Converts a string or other formats to a ``datetime`` object.  
+
+>``.loc[]`` (Method): Accesses a group of rows and columns by labels or a boolean array.
+
+>``.isna()`` (Method): Detects missing values in the DataFrame.
+
+>``.fillna()`` (Method): Fills missing values with a specified value or method.
+
+<font size="4"><b>NumPy</b></font>  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A library for numerical computing. It supports arrays and operations on them, as well as tools to handle missing or invalid data.
+
+>``numpy.nan`` (Object): Represents missing values.
+
+>``astype()`` (Method): Converts a DataFrame column to a specified data type.
+
+<font size="4"><b>Matplotlib</b></font>  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A library for creating visualizations in Python. It is the foundation for many other visualization libraries.
+
+>``plt.plot()`` (Function): Creates a line plot.
+
+>``plt.xlabel()`` and ``plt.ylabel()`` (Functions): Sets labels for x and y axes.
+
+>``plt.title()`` (Function): Adds a title to the plot.
+
+>``plt.show()`` (Function): Displays the plot.
+
+>``matplotlib.dates.DateFormatter`` (Class): Formats datetime axes in plots.
+
+>``matplotlib.dates`` (Module): Provides tools for manipulating and formatting datetime data in plots.
+
+<font size="4"><b>Seaborn</b></font>  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Python visualization library built on matplotlib, designed for making statistical graphics easier to create and interpret.
+
+>``sns.heatmap()`` (Function): Creates a heatmap for visualizing correlations.
+
+>``sns.histplot()`` (Function): Generates a histogram for data distribution.
+
+>``sns.pairplot()`` (Function): Produces pairwise scatterplots and histograms.
+
+>``sns.lineplot()`` (Function): Creates a line plot with additional styling options.
+
+Each library and function contributes to the workflow, ensuring efficient data handling, cleaning, and visualization.
+
 
 
 ###
