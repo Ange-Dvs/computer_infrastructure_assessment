@@ -139,7 +139,7 @@ def stats_single_field(dataset, field, unit):
     print(f'Average {field.capitalize()}:\t\t {avg_field:.2f}{unit}')
     print(f'Range for day:\t\t\t {max_value}{unit} - {min_value}{unit} = {full_range}{unit}')
     print(f'Average hourly rate of change:\t {av_rate_change:.2f}{unit}')
-    print(f'Largest rate of change was:\t {largest_change_rate}{unit}')
+    print(f'Largest rate of change was:\t {largest_change_rate:.2f}{unit}')
 
 
 
