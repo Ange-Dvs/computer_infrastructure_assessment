@@ -71,6 +71,30 @@ The file is then read into the notebook to be analysed using the ``pandas`` func
 
 ## Walkthrough of code
 
+### 1. Setup and Configuration
+Imports: Libraries like ``Pandas``, ``NumPy``, ``Matplotlib``, and ``Seaborn`` are imported here.
+Custom Functions: Utility functions like clean_data or plot_heatmap are loaded from myfunctions.py.
+
+### 2. Data Loading
+Dataset: The ``.json`` file is read into a pandas DataFrame.
+Preview: The first few rows of the dataset are displayed to understand its structure and check for immediate issues.
+
+### 3. Data Cleaning
+Replacing Missing Values: Converts invalid entries into NaN for easier handling.
+Data Type Conversions: Ensures numeric columns are properly formatted for analysis.
+
+### 4. Exploratory Data Analysis
+Descriptive Statistics: Uses ``.describe()`` to get key metrics for numeric fields.
+Initial Visualizations: Quick plots to identify trends and anomalies.
+
+### 5. Visualization Creation
+Heatmaps: Correlation analysis to see how variables relate.
+Line Graphs: Show trends in temperature, rainfall, or wind speed over time.
+
+### 6. Conclusion and Findings
+Summary: Key insights from the analysis are highlighted.
+Next Steps: Suggestions for further analysis or improvements.
+
 ### **Functions Summary**
 
 #### ``colours_for_pie``
@@ -102,37 +126,6 @@ Calculates and prints detailed statistics for a specific field in the dataset, i
 - The average hourly rate of change.
 - The largest observed rate of change.
 
-
-### Cleaning the data 
-
-During testing of the notebook it was seen that occasionally there would be missing data in the ``.json`` file, which is not uncommon when using real data.  
-The way in which the missing entries were shown was inconsistent with blank values sometimes being represented as empty quotation marks or by using a hyphen.  
-
-From a review of the ``.json`` file it appeared that the empty quotation marks were how the blank entries in a text field was represented while the hyphen appeared to be used for the cases where the a numeric value would be expected. The blank string fields would cause issues when generating the various plots. The "-" string being in place instead of a numeric value in some fields would cause issues when attempting to do calculations where a numeric value would be expect.  
-
-Examples of occurrences of malformed or missing data:  
-![Example of empty field with empty quotation marks](images/blank_empty_value_quotations.png)   
-![Example of empty field with empty hyphen](images/blank_empty_value_hyphen.png)    
-
-To avoid this at the beginning of the notebook the data is checked and corrected to avoid issues in calculations when the cells are executed.  
-The fields which are used for calculations are specified in a variable called ``numeric_field_to_convert``.  
-This variable is then used to cycle through these values in the DataFrame for each field and convert the field to a numeric data type.  
-If a string is in place of a numeric value, for example the hyphen shown in the screenshot above an error is thrown.  
-With this, ``errors='coerce'`` is used to take any values causing an error and change the value of the field for that entry to NaN to avoid issues.
-
-After this the entire dataset is check for the occurrence of empty quotation marks in a field. This is then also replaced with NaN using ``numpy.nan`` with ``inplace`` set to ``True``.  
-
-## Historical data 
-ATHENRY
-date:Date and Time (utc)
-rain:Precipitation Amount (mm)
-temp:Air Temperature (C)
-rhum:Relative Humidity (%)
-wdsp:Mean Wind Speed (kt)
-wddir:Predominant Wind Direction (deg)
-msl:Mean Sea Level Pressure (hPa) (pressure) 
-
-
 ## Additional resources & reading
 
 ### Libraries used
@@ -157,7 +150,7 @@ It is also used to convert date information in the ``CSV`` file to a datetime se
 
 > ``.to_datetime`` (Function) - Converts a string or other formats to a ``datetime`` object.  
 
->``.loc[]`` (Method): Accesses a group of rows and columns by labels or a boolean array.
+>``.loc[]`` (Method): Accesses a group of rows and columns by labels or a Boolean array.
 
 >``.isna()`` (Method): Detects missing values in the DataFrame.
 
@@ -188,54 +181,89 @@ It is also used to convert date information in the ``CSV`` file to a datetime se
 <font size="4"><b>Seaborn</b></font>  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Python visualization library built on matplotlib, designed for making statistical graphics easier to create and interpret.
 
->``sns.heatmap()`` (Function): Creates a heatmap for visualizing correlations.
+>``sns.heatmap()`` (Function): Creates a heatmap for visualizing correlations.[^]
 
 >``sns.histplot()`` (Function): Generates a histogram for data distribution.
 
->``sns.pairplot()`` (Function): Produces pairwise scatterplots and histograms.
+>``sns.pairplot()`` (Function): Produces pairwise scatterplots and KDE.[^]
 
 >``sns.lineplot()`` (Function): Creates a line plot with additional styling options.
 
-Each library and function contributes to the workflow, ensuring efficient data handling, cleaning, and visualization.
 
+### **References and Resources**
 
+During the creation of the project a number of various online resources and documentation we used as background for the analysis, visualisation, and understanding of weather data. Below is a list of the references, along with a brief explanation of the information within:
 
-###
+#### **Pandas Documentation**
+- [pandas.read_json](https://pandas.pydata.org/docs/reference/api/pandas.read_json.html#pandas-read-json)  
+  Used for loading JSON weather data into a DataFrame for analysis.  
 
-chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://cli.fusio.net/cli/stormcenter/PDF/Elin.pdf > storm elin 2023
-https://www.met.ie/climate/climate-of-ireland#:~:text=It's%20a%20zone%20of%20transition,typical%20of%20the%20Irish%20climate.
+- [pandas.DataFrame.describe](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html)  
+  Used to compute summary statistics for numerical fields.
 
-plt.colormaps['tab20']`` function
-range(len(
-    ``.mode()``
-enumerate()
-idxmin()
-.strftime('%H:%M')
-.abs()
-https://seaborn.pydata.org/generated/seaborn.heatmap.html
-https://seaborn.pydata.org/generated/seaborn.pairplot.html
-https://seaborn.pydata.org/tutorial/distributions.html#kernel-density-estimation
-https://seaborn.pydata.org/generated/seaborn.histplot.html
-https://seaborn.pydata.org/generated/seaborn.kdeplot.html
-https://www.analyticsvidhya.com/blog/2023/12/mastering-tabulate/
-https://stackoverflow.com/questions/70630387/saving-functions-into-package-in-jupyter-notebooks
-https://www.w3schools.com/python/pandas/ref_df_describe.asp
-https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html
-https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.filter.html
-https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.loc.html#pandas.DataFrame.loc
-https://www.codecademy.com/resources/docs/pandas/dataframe/loc
+- [pandas.DataFrame.loc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.loc.html#pandas.DataFrame.loc)  
+  Used to filter and access specific rows and columns in the DataFrame.  
 
+---
 
+#### **Data Cleaning and Manipulation**
+- [W3Schools - Handling JSON in Pandas](https://www.w3schools.com/python/pandas/pandas_json.asp)  
+  Served as a guide for handling JSON data in Pandas efficiently.  
 
+- [Combining Date and Time Columns in Pandas](https://scales.arabpsychology.com/stats/how-do-i-combine-two-date-and-time-columns-into-one-in-a-pandas-dataframe/)  
+  Used for combining `date` and `reportTime` into a single datetime column.  
 
+- [Drop Last Column from DataFrame](https://sparkbyexamples.com/pandas/pandas-drop-last-column-from-dataframe/)  
+  Helped in understanding how to drop unnecessary columns during pre-processing.
 
-### External resources links
-https://pandas.pydata.org/docs/reference/api/pandas.read_json.html#pandas-read-json
-https://www.w3schools.com/python/pandas/pandas_json.asp
-https://www.geeksforgeeks.org/visualizing-json-data-in-python/
-https://scales.arabpsychology.com/stats/how-do-i-combine-two-date-and-time-columns-into-one-in-a-pandas-dataframe/
-https://sparkbyexamples.com/pandas/pandas-drop-last-column-from-dataframe/#:~:text=To%20drop%20the%20last%20column,pop()%20%2C%20and%20del%20functions.
-https://stackoverflow.com/questions/45196965/pandas-drop-last-column-of-dataframe
-https://matplotlib.org/stable/users/explain/colors/colormaps.html#qualitative
-https://matplotlib.org/stable/api/dates_api.html#matplotlib-dates
-https://matplotlib.org/stable/api/dates_api.html#date-formatters
+---
+
+#### **Matplotlib and Seaborn Visualization**
+- [Matplotlib - Colormaps](https://matplotlib.org/stable/users/explain/colors/colormaps.html#qualitative)  
+  Used for selecting colormaps to ensure distinct colours in visualizations.  
+
+- [Matplotlib Dates API](https://matplotlib.org/stable/api/dates_api.html#matplotlib-dates)  
+  Provided guidance on formatting and customizing date axes in plots.  
+
+- [Seaborn Heatmap Documentation](https://seaborn.pydata.org/generated/seaborn.heatmap.html)  
+  Used for creating heatmaps to visualize correlations in weather data.  
+
+- [Seaborn Pairplot Documentation](https://seaborn.pydata.org/generated/seaborn.pairplot.html)  
+  Helped generate scatterplots to examine relationships between variables.
+
+---
+
+#### **Weather Science**
+- [NCAS - What Causes Weather?](https://ncas.ac.uk/learn/what-causes-weather/#:~:text=the%20earth%E2%80%99s%20temperature)  
+  Provided insight into atmospheric pressure and its relationship to weather.  
+
+- [Interpreting Weather Charts](https://www.rmets.org/metmatters/how-interpret-weather-chart)  
+  Served as a reference for understanding weather data and pressure systems.  
+
+- [Beaufort Wind Scale](https://www.rmets.org/metmatters/beaufort-wind-scale)  
+  Used to understand wind speed classifications and their impact on weather.
+
+---
+
+#### **Climate and Meteorological Data**
+- [Met Éireann Climate Data](https://www.met.ie/climate/available-data/monthly-data)  
+  Source of historical weather data for the Athenry station.  
+
+- [Storm Barra Report (2021)](https://cli.fusio.net/cli/stormcenter/PDF/Barra.pdf)  
+  Reviewed as an example of detailed storm documentation.  
+
+- [Climate of Ireland](https://www.met.ie/climate/climate-of-ireland#:~:text=It's%20a%20zone%20of%20transition)  
+  Provided a summary of Ireland's climate for context in analysis.
+
+---
+
+#### **Additional Tutorials**
+- [Saving Functions in Jupyter](https://stackoverflow.com/questions/70630387/saving-functions-into-package-in-jupyter-notebooks)  
+  Used for organizing helper functions into reusable modules.  
+
+- [Visualizing JSON Data in Python](https://www.geeksforgeeks.org/visualizing-json-data-in-python/)  
+  Helped in understanding how to visualize JSON-formatted weather data.  
+
+---
+# End 
+
